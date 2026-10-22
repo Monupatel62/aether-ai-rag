@@ -1,6 +1,6 @@
 # Repository specification: aether-ai-rag
 
-**Status:** Documentation baseline copied from the Aether AI master specification. Implementation status must be verified separately.
+**Status:** Repository exists; documentation-only on the inspected `main` branch. No application implementation is present in the audited tree.
 
 ## Mission
 
@@ -8,7 +8,7 @@ Retrieval-augmented generation pipeline for ingestion hooks, chunking, embedding
 
 ## Dependencies and connections
 
-Files lifecycle contract; knowledge metadata/ACL/deletion contracts; search indexing/query contract; providers embedding contract; security policy contract. Knowledge and Search must not import RAG implementation.
+aether-ai-files, aether-ai-knowledge, aether-ai-search, aether-ai-providers for embeddings, and aether-ai-security.
 
 ## Owned capabilities
 
