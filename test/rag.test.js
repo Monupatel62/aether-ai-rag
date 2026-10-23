@@ -53,3 +53,11 @@ test("does not return results if search returns malformed response", async () =>
   const { service } = fixture({ search: async () => null });
   await assert.rejects(service.retrieve({ principal, query: "question" }), RagError);
 });
+
+
+test("rejects oversized result arrays and malformed ACL versions", async () => {
+  const oversized = fixture({ maxResults: 2 });
+  await assert.rejects(oversized.service.retrieve({ principal, query: "question" }), (e) => e.code === "invalid_search_response");
+  const malformed = fixture({ search: async () => [{ sourceId: "source-1", tenantId: "tenant-a", aclVersion: -1, text: "must not pass" }] });
+  assert.equal((await malformed.service.retrieve({ principal, query: "question" })).count, 0);
+});
