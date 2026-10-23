@@ -1,0 +1,17 @@
+{
+  "name": "@aether-ai/rag-contract",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Versioned RAG chunk, embedding, retrieval, and citation contracts",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/index.js && node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
