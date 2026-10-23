@@ -1,18 +1,39 @@
-# aether-ai-rag
+# @aether-ai/rag
 
-Retrieval-augmented generation pipeline for ingestion hooks, chunking, embeddings, retrieval, and citations.
+Deterministic text chunking utility for Aether AI retrieval pipelines.
 
-**Status:** Documentation foundation only; no implementation or deployment is claimed.
+## Status
 
-## Documentation
-- [Project specification](docs/PROJECT_SPEC.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Dependencies and contracts](docs/DEPENDENCIES_AND_CONTRACTS.md)
-- [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
-- [Technical design](docs/TECHNICAL_DESIGN.md)
-- [Security review](docs/SECURITY_REVIEW.md)
-- [Research and licenses](docs/RESEARCH_AND_LICENSES.md)
-- [Engineering standard](docs/ENGINEERING_STANDARD.md)
-- [Work log](docs/WORKLOG.md)
+This is a first pure-function utility, not a complete RAG pipeline. Extraction sandboxing, embedding provider, chunking/ranking policy, persistence, ACL filtering, source deletion/revocation propagation, and retrieval evaluation remain open or unimplemented.
 
-[Master catalog](https://github.com/Monupatel62/aether-ai-platform/blob/main/docs/REPOSITORY_CATALOG.md)
+## Current implementation
+
+- Deterministic text chunking with configurable chunk length and overlap.
+- Stable chunk IDs based on source ID, source version, and chunk index.
+- Source offsets and content slices for provenance/citation alignment.
+- Input byte limit and bounded chunk/overlap configuration.
+- Paragraph/space boundary preference when a reasonable boundary is available.
+
+## Example
+
+```ts
+import { chunkText } from "@aether-ai/rag";
+
+const chunks = chunkText("source/doc-1", "v1", extractedText, {
+  maxChars: 1200,
+  overlapChars: 120
+});
+```
+
+The function does not extract files, persist content, embed text, enforce ACLs, or decide whether processing is authorized. Retrieved text is untrusted data and must not override system policy.
+
+## Development
+
+```bash
+npm install
+npm run typecheck
+npm test
+npm run build
+```
+
+CI is configured for Node.js 20 and 22. A production RAG flow requires approved file/knowledge/search/provider/security contracts and tenant/deletion integration tests.
