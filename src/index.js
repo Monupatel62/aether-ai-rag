@@ -28,16 +28,16 @@ export function createRagService({ embedQuery, search, getCurrentSourceState, au
       let candidates;
       try { candidates = await search({ vector, tenantId: principal.tenantId, topK }); }
       catch { throw new RagError("search_unavailable", "Search failed"); }
-      if (!Array.isArray(candidates)) throw new RagError("invalid_search_response", "Search adapter returned an invalid response");
+      if (!Array.isArray(candidates) || candidates.length > maxResults) throw new RagError("invalid_search_response", "Search adapter returned an invalid response");
 
       const results = [];
       for (const candidate of candidates.slice(0, topK)) {
-        if (!isRecord(candidate) || typeof candidate.sourceId !== "string" || candidate.tenantId !== principal.tenantId || !Number.isSafeInteger(candidate.aclVersion) || typeof candidate.text !== "string") continue;
+        if (!isRecord(candidate) || typeof candidate.sourceId !== "string" || !candidate.sourceId.trim() || candidate.sourceId.length > 256 || candidate.tenantId !== principal.tenantId || !Number.isSafeInteger(candidate.aclVersion) || candidate.aclVersion < 0 || typeof candidate.text !== "string") continue;
         if (candidate.text.length > 100_000) continue;
         let current;
         try { current = await getCurrentSourceState({ sourceId: candidate.sourceId, tenantId: principal.tenantId }); }
         catch { throw new RagError("authorization_state_unavailable", "Current source authorization state could not be checked"); }
-        if (!isRecord(current) || current.status !== "active" || current.tenantId !== principal.tenantId || current.aclVersion !== candidate.aclVersion) continue;
+        if (!isRecord(current) || current.status !== "active" || current.tenantId !== principal.tenantId || !Number.isSafeInteger(current.aclVersion) || current.aclVersion < 0 || current.aclVersion !== candidate.aclVersion) continue;
         let allowed = false;
         try { allowed = (await authorizeSource({ principal, sourceId: candidate.sourceId, tenantId: principal.tenantId, aclVersion: current.aclVersion })) === true; }
         catch { throw new RagError("authorization_unavailable", "Source access could not be verified"); }
